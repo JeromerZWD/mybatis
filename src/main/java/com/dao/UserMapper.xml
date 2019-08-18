@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace(名称空间):名称冲突
+名称空间：文件所在的包名来命名
+id：作为标识，执行那个操作，xml解析的步骤，
+#{}:放入参数，参数名可以随便取的
+parameterType:参数类型，简单类型：int,boolean,float...
+复杂类型：全类名 java.lang.String
+ -->
+<mapper namespace="com.dao.UserMapper">
+    <!-- 定义resultMap -->
+    <!--
+        [id]：定义resultMap的唯一标识
+        [type]：定义该resultMap最终映射的pojo对象
+        [id标签]：映射结果集的唯一标识列，如果是多个字段联合唯一，则定义多个id标签
+        [result标签]：映射结果集的普通列
+        [column]：SQL查询的列名，如果列有别名，则该处填写别名
+        [property]：pojo对象的属性名
+    -->
+    <resultMap type="User" id="userResultMap">
+        <id column="id_" property="id"/>
+        <result column="username_" property="username"/>
+        <result column="password_" property="password"/>
+    </resultMap>
+    <!-- 根据ID查询用户信息（学习resultMap） -->
+    <select id="findUserByIdResultMap" parameterType="int" resultMap="userResultMap">
+SELECT id id_,username username_,password password_ FROM users WHERE id = #{id}
+</select>
+<select id="findById" parameterType="int" resultType="User">
+select * from users where id=#{id}
+</select>
+<select id="findAll" resultType="User">
+select * from  users
+</select>
+<insert id="saveUser" parameterType="User">
+/*id int 类型 主键自增*/
+<selectKey keyProperty="id" resultType="int" order="AFTER">
+    SELECT LAST_INSERT_ID()
+</selectKey><!--id String 类型 使用mysql uuid
+    <selectKey keyProperty="id" resultType="string" order="BEFORE">
+        select uuid()
+    </selectKey>-->
+insert  into users(username,password) value(#{username},#{password})
+</insert>
+    <delete id="deleteUser" parameterType="int">
+delete from users where id=#{id}
+</delete>
+    <update id="updateUser" parameterType="User">
+update users
+<set>
+<if test="username!=null">
+username=#{username},
+</if>
+<if test="password!=null">
+password=#{password}
+</if>
+</set>
+<where>
+<if test="id!=null">
+id=#{id}
+</if>
+</where>
+
+</update>
+    <select id="logincheck" resultType="User">
+select * from users
+<where>
+<if test="username!=null">
+username=#{username}
+</if>
+<if test="password!=null">
+and password=#{password}
+</if>
+</where>
+</select>
+<select id="findByIds" resultType="User">
+select * from users
+<foreach collection="ids" item="id" separator="," open="where id in (" close=")">
+#{id}
+</foreach>
+</select>
+    <select id="findByIds2"  resultType="User">
+select * from users
+<foreach collection="ids" item="id" separator="or" open="where (" close=")">
+id=#{id}
+</foreach>
+</select>
+    <insert id="addUsers">
+<foreach collection="users" item="user" separator=";">
+insert into users(id,username,password) values(#{user.id},#{user.username},#{user.password})
+</foreach>
+</insert>
+    <select id="selectName" resultType="User" parameterType="String">
+select * from users
+<choose>
+<when test="username==cjm">
+<where>
+username=#{username}
+</where>
+</when>
+<otherwise>
+<where>
+username="zwd"
+</where>
+</otherwise>
+</choose>
+</select>
+    <cache/>
+</mapper>

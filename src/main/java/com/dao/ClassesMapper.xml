@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ClassesMapper">
+<resultMap id="ClassesResultMap" type="Classes">
+    <id column="c_id" property="id"/>
+    <result column="c_name" property="name"/>
+    <association property="teacher" javaType="Teacher">
+        <id column="t_id" property="id"/>
+        <result column="t_name" property="name"/>
+    </association>
+</resultMap>
+<select id="findById" parameterType="int" resultMap="ClassesResultMap">
+    select * from class as c,teacher as t where t.t_id=c.teacher_id and c.c_id=#{id}
+</select>
+    <select id="findAllStudent" resultMap="ClassesAndStudentResultMap">
+        select * from student as s,class as c,teacher as t where c.c_id=#{id} and t.t_id=c.teacher_id and c.c_id=s.class_id
+    </select>
+    <resultMap id="ClassesAndStudentResultMap" type="Classes">
+        <id column="c_id" property="id"/>
+        <result column="c_name" property="name"/>
+        <association property="teacher" javaType="Teacher">
+            <id column="t_id" property="id"/>
+            <result column="t_name" property="name"/>
+        </association>
+        <collection property="students" ofType="Student">
+        <id property="id" column="s_id"/>
+            <result property="name" column="s_name"/>
+        </collection>
+    </resultMap>
+
+
+
+
+</mapper>

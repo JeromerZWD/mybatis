@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--Properties（属性）配置 可引入资源文件-->
+    <properties resource="db.properties" />
+    <!--配置全局参数 需要再配置-->
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+    <!--typeAliases 别名定义-->
+    <typeAliases>
+        <!--配置单个别名-->
+       <!-- <typeAlias type="com.entity.User" alias="User"/>-->
+        <!--批量别名定义 别名就是类名-->
+        <package name="com.entity"/>
+    </typeAliases>
+    <!-- 以后这部分内容交给spring管理 -->
+    <environments default="development">
+        <environment id="development">
+            <!--使用jdbc的事务 事务控制由mybatis-->
+            <transactionManager type="JDBC"/>
+            <!--数据库连接池 由mybatis控制管理-->
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!--Sql映射文件的注册 -->
+    <mappers>
+        <!--加载单个文件的加载-->
+        <!--<mapper resource="com/dao/UserMapper.xml"/>-->
+        <!--通过mapper接口加载映射文件 前提是 映射文件和mapper接口同名 且在同一目录下 还有必须是mapper代理方法-->
+       <!-- <mapper class="com.dao.UserMapper"/>-->
+        <!--批量加载mapper-->
+        <package name="com.dao"/>
+    </mappers>
+</configuration>
